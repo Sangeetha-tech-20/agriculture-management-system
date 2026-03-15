@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriFlow - Agriculture Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a1f0d;
+            --bg-light: #0f2912;
+            --fg: #f0fdf4;
+            --fg-muted: #a7c4a0;
+            --accent: #22c55e;
+            --accent-glow: #4ade80;
+            --card: rgba(15, 41, 18, 0.8);
+            --border: rgba(34, 197, 94, 0.2);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Background Styles */
+        .hero-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                linear-gradient(180deg, 
+                    rgba(10, 31, 13, 0.95) 0%, 
+                    rgba(10, 31, 13, 0.8) 50%,
+                    rgba(10, 31, 13, 0.95) 100%),
+                url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80') center/cover no-repeat;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+        }
+
+        .dashboard-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--bg);
+        }
+
+        .dashboard-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 10% 10%, rgba(34, 197, 94, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 90% 90%, rgba(34, 197, 94, 0.05) 0%, transparent 40%);
+        }
+
+        /* Animated Grid Pattern */
+        .grid-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(34, 197, 94, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 197, 94, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 8s ease-in-out infinite;
+        }
+
+        @keyframes floatParticle {
+            0%, 100% { opacity: 0; transform: translateY(100vh) scale(0); }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 31, 13, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .nav.scrolled {
+            padding: 0.75rem 2rem;
+            background: rgba(10, 31, 13, 0.95);
+        }
+
+        .nav-link {
+            position: relative;
+            color: var(--fg-muted);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 80%;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #16a34a 100%);
+            color: #000;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--fg);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--accent);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(34, 197, 94, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .dashboard-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(15, 41, 18, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--fg);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--fg-muted);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--fg-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Page Transitions */
+        .page {
+            display: none;
+            min-height: 100vh;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--fg) 0%, var(--accent-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--fg-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        /* Stats */
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            color: var(--fg-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(10, 31, 13, 0.95);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 280px;
+            }
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--fg-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent);
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--danger);
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: toastSlide 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes toastSlide {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success { border-left: 3px solid var(--accent); }
+        .toast.error { border-left: 3px solid var(--danger); }
+        .toast.warning { border-left: 3px solid var(--warning); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Animations */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+        .stagger-6 { transition-delay: 0.6s; }
+
+        /* Weather Widget */
+        .weather-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 8px;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--fg);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 1023px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="dashboard-bg hidden" id="dashboardBg"></div>
+    <div class="grid-pattern"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Navigation (Public Pages) -->
+    <nav class="nav" id="publicNav">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="#" onclick="showPage('home')" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold">AgriFlow</span>
+            </a>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="#" onclick="showPage('home')" class="nav-link active">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="showPage('login')" class="btn btn-secondary btn-sm">Login</button>
+                <button onclick="showPage('register')" class="btn btn-primary btn-sm">Get Started</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar (Dashboard Pages) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="flex items-center gap-3 mb-8 px-2">
+            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+            <span class="text-xl font-bold">AgriFlow</span>
+        </div>
+
+        <nav class="space-y-1">
+            <a href="#" onclick="showPage('dashboard')" class="sidebar-link active" data-page="dashboard">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="#" onclick="showPage('crops')" class="sidebar-link" data-page="crops">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                Crop Management
+            </a>
+            <a href="#" onclick="showPage('irrigation')" class="sidebar-link" data-page="irrigation">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                </svg>
+                Irrigation
+            </a>
+            <a href="#" onclick="showPage('weather')" class="sidebar-link" data-page="weather">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                </svg>
+                Weather
+            </a>
+            <a href="#" onclick="showPage('market')" class="sidebar-link" data-page="market">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+                Market Prices
+            </a>
+            <a href="#" onclick="showPage('schemes')" class="sidebar-link" data-page="schemes">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                Govt. Schemes
+            </a>
+            <a href="#" onclick="showPage('profile')" class="sidebar-link" data-page="profile">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Profile
+            </a>
+        </nav>
+
+        <div class="absolute bottom-4 left-4 right-4">
+            <button onclick="logout()" class="sidebar-link w-full justify-center text-red-400 hover:bg-red-500/10 hover:text-red-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- HOME PAGE -->
+        <div class="page active" id="page-home">
+            <section class="hero">
+                <div class="max-w-4xl mx-auto">
+                    <div class="fade-up visible stagger-1">
+                        <span class="inline-block px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-400 text-sm font-medium mb-6">
+                            Revolutionizing Agriculture Management
+                        </span>
+                    </div>
+                    <h1 class="hero-title fade-up visible stagger-2">Agriculture Management System</h1>
+                    <p class="hero-subtitle fade-up visible stagger-3">
+                        Empowering farmers with intelligent crop management, real-time weather insights, 
+                        market prices, and government schemes - all in one powerful platform.
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center fade-up visible stagger-4">
+                        <button onclick="showPage('register')" class="btn btn-primary">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Get Started Free
+                        </button>
+                        <button onclick="showPage('login')" class="btn btn-secondary">
+                            Sign In
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section id="features" class="py-24 px-4">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">Powerful Features</h2>
+                        <p class="text-lg text-[var(--fg-muted)] max-w-2xl mx-auto">
+                            Everything you need to manage your farm efficiently
+                        </p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="card fade-up stagger-1">
+                            <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Crop Management</h3>
+                            <p class="text-[var(--fg-muted)]">Track and manage all your crops with detailed records, growth stages, and harvest predictions.</p>
+                        </div>
+                        <div class="card fade-up stagger-2">
+                            <div class="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Smart Irrigation</h3>
+                            <p class="text-[var(--fg-muted)]">Optimize water usage with intelligent irrigation scheduling and monitoring systems.</p>
+                        </div>
+                        <div class="card fade-up stagger-3">
+                            <div class="w-14 h-14 bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Weather Insights</h3>
+                            <p class="text-[var(--fg-muted)]">Real-time weather data and forecasts to help you make informed farming decisions.</p>
+                        </div>
+                        <div class="card fade-up stagger-4">
+                            <div class="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Market Prices</h3>
+                            <p class="text-[var(--fg-muted)]">Stay updated with live market prices to sell your produce at the best rates.</p>
+                        </div>
+                        <div class="card fade-up stagger-5">
+                            <div class="w-14 h-14 bg-red-500/20 rounded-2xl flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Govt. Schemes</h3>
+                            <p class="text-[var(--fg-muted)]">Access government subsidies and schemes designed to support farmers.</p>
+                        </div>
+                        <div class="card fade-up stagger-6">
+                            <div class="w-14 h-14 bg-cyan-500/20 rounded-2xl flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Smart Alerts</h3>
+                            <p class="text-[var(--fg-muted)]">Get timely notifications for weather alerts, market changes, and crop reminders.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="py-24 px-4">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="text-center">
+                            <div class="stat-number" data-count="50000">0</div>
+                            <div class="text-[var(--fg-muted)]">Active Farmers</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="stat-number" data-count="1200000">0</div>
+                            <div class="text-[var(--fg-muted)]">Acres Managed</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="stat-number" data-count="98">0</div>
+                            <div class="text-[var(--fg-muted)]">Customer Satisfaction</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="stat-number" data-count="500">0</div>
+                            <div class="text-[var(--fg-muted)]">Districts Covered</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- LOGIN PAGE -->
+        <div class="page" id="page-login">
+            <section class="min-h-screen flex items-center justify-center px-4 py-20">
+                <div class="w-full max-w-md">
+                    <div class="card p-8">
+                        <div class="text-center mb-8">
+                            <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold">Welcome Back</h2>
+                            <p class="text-[var(--fg-muted)]">Sign in to your account</p>
+                        </div>
+                        <form id="loginForm" onsubmit="handleLogin(event)">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-input" placeholder="farmer@example.com" required id="loginEmail">
+                                </div>
+                                <div>
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-input" placeholder="Enter your password" required id="loginPassword">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 accent-green-500">
+                                        <span class="text-sm text-[var(--fg-muted)]">Remember me</span>
+                                    </label>
+                                    <a href="#" class="text-sm text-green-400 hover:underline">Forgot password?</a>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-full">Sign In</button>
+                            </div>
+                        </form>
+                        <p class="text-center mt-6 text-[var(--fg-muted)]">
+                            Don't have an account? 
+                            <a href="#" onclick="showPage('register')" class="text-green-400 hover:underline">Register</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- REGISTER PAGE -->
+        <div class="page" id="page-register">
+            <section class="min-h-screen flex items-center justify-center px-4 py-20">
+                <div class="w-full max-w-md">
+                    <div class="card p-8">
+                        <div class="text-center mb-8">
+                            <h2 class="text-2xl font-bold">Create Account</h2>
+                            <p class="text-[var(--fg-muted)]">Join thousands of farmers</p>
+                        </div>
+                        <form id="registerForm" onsubmit="handleRegister(event)">
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="form-label">First Name</label>
+                                        <input type="text" class="form-input" placeholder="John" required id="regFirstName">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Last Name</label>
+                                        <input type="text" class="form-input" placeholder="Doe" required id="regLastName">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-input" placeholder="farmer@example.com" required id="regEmail">
+                                </div>
+                                <div>
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-input" placeholder="+91 98765 43210" required id="regPhone">
+                                </div>
+                                <div>
+                                    <label class="form-label">Farm Size (Acres)</label>
+                                    <input type="number" class="form-input" placeholder="10" required id="regFarmSize">
+                                </div>
+                                <div>
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-input" placeholder="Create a strong password" required id="regPassword">
+                                </div>
+                                <div>
+                                    <label class="form-label">Confirm Password</label>
+                                    <input type="password" class="form-input" placeholder="Confirm your password" required id="regConfirmPassword">
+                                </div>
+                                <button type="submit" class="btn btn-primary w-full">Create Account</button>
+                            </div>
+                        </form>
+                        <p class="text-center mt-6 text-[var(--fg-muted)]">
+                            Already have an account? 
+                            <a href="#" onclick="showPage('login')" class="text-green-400 hover:underline">Sign In</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- DASHBOARD PAGE -->
+        <div class="page" id="page-dashboard">
+            <section class="p-6 lg:p-8 pt-20 lg:pt-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Welcome back, <span id="dashboardUserName">Farmer</span></h1>
+                    <p class="text-[var(--fg-muted)]">Here's what's happening with your farm today</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card dashboard-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                </svg>
+                            </div>
+                            <span class="text-green-400 text-sm font-medium">+12%</span>
+                        </div>
+                        <div class="stat-number text-2xl" id="totalCrops">0</div>
+                        <div class="text-[var(--fg-muted)] text-sm">Active Crops</div>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                </svg>
+                            </div>
+                            <span class="text-blue-400 text-sm font-medium">Active</span>
+                        </div>
+                        <div class="stat-number text-2xl" id="totalIrrigation">0</div>
+                        <div class="text-[var(--fg-muted)] text-sm">Irrigation Schedules</div>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
+                            </div>
+                            <span class="text-yellow-400 text-sm font-medium" id="weatherTemp">--</span>
+                        </div>
+                        <div class="text-lg font-semibold" id="weatherCondition">Loading...</div>
+                        <div class="text-[var(--fg-muted)] text-sm">Current Weather</div>
+                    </div>
+                    <div class="card dashboard-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <span class="text-purple-400 text-sm font-medium">Today</span>
+                        </div>
+                        <div class="stat-number text-2xl">Rs. <span id="avgPrice">0</span></div>
+                        <div class="text-[var(--fg-muted)] text-sm">Avg. Market Price</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                    <button onclick="showPage('crops')" class="card dashboard-card flex flex-col items-center text-center p-4 hover:bg-green-500/10">
+                        <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium">Add Crop</span>
+                    </button>
+                    <button onclick="showPage('irrigation')" class="card dashboard-card flex flex-col items-center text-center p-4 hover:bg-blue-500/10">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium">Irrigation</span>
+                    </button>
+                    <button onclick="showPage('weather')" class="card dashboard-card flex flex-col items-center text-center p-4 hover:bg-yellow-500/10">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium">Weather</span>
+                    </button>
+                    <button onclick="showPage('market')" class="card dashboard-card flex flex-col items-center text-center p-4 hover:bg-purple-500/10">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium">Market</span>
+                    </button>
+                    <button onclick="showPage('schemes')" class="card dashboard-card flex flex-col items-center text-center p-4 hover:bg-red-500/10">
+                        <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium">Schemes</span>
+                    </button>
+                    <button onclick="showPage('profile')" class="card dashboard-card flex flex-col items-center text-center p-4 hover:bg-cyan-500/10">
+                        <div class="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium">Profile</span>
+                    </button>
+                </div>
+
+                <!-- Recent Activity & Weather -->
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-4">Recent Crops</h3>
+                        <div class="space-y-3" id="recentCropsList">
+                            <p class="text-[var(--fg-muted)] text-center py-8">No crops added yet</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-4">Weather Forecast</h3>
+                        <div id="weatherForecast" class="grid grid-cols-5 gap-2">
+                            <!-- Weather forecast will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CROPS PAGE -->
+        <div class="page" id="page-crops">
+            <section class="p-6 lg:p-8 pt-20 lg:pt-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Crop Management</h1>
+                        <p class="text-[var(--fg-muted)]">Manage all your crops in one place</p>
+                    </div>
+                    <button onclick="openCropModal()" class="btn btn-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Add New Crop
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Crop Name</th>
+                                    <th>Variety</th>
+                                    <th>Area (Acres)</th>
+                                    <th>Planted Date</th>
+                                    <th>Expected Harvest</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cropsTableBody">
+                                <!-- Crops will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- IRRIGATION PAGE -->
+        <div class="page" id="page-irrigation">
+            <section class="p-6 lg:p-8 pt-20 lg:pt-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Irrigation Management</h1>
+                        <p class="text-[var(--fg-muted)]">Schedule and manage your irrigation systems</p>
+                    </div>
+                    <button onclick="openIrrigationModal()" class="btn btn-primary">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Add Schedule
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="irrigationList">
+                    <!-- Irrigation schedules will be loaded here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- WEATHER PAGE -->
+        <div class="page" id="page-weather">
+            <section class="p-6 lg:p-8 pt-20 lg:pt-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Weather Information</h1>
+                    <p class="text-[var(--fg-muted)]">Real-time weather data and forecasts</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <div class="card mb-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-xl font-semibold">Current Weather</h3>
+                                    <p class="text-[var(--fg-muted)]" id="weatherLocation">Loading location...</p>
+                                </div>
+                                <button onclick="refreshWeather()" class="btn btn-secondary btn-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    Refresh
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <div class="weather-icon" id="weatherIcon">
+                                    <svg class="w-20 h-20 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-5xl font-bold" id="currentTemp">--</div>
+                                    <div class="text-xl text-[var(--fg-muted)]" id="currentCondition">Loading...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="text-xl font-semibold mb-4">5-Day Forecast</h3>
+                            <div id="forecastList" class="space-y-4">
+                                <!-- Forecast will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="card">
+                            <h3 class="text-lg font-semibold mb-4">Weather Details</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[var(--fg-muted)]">Humidity</span>
+                                    <span class="font-semibold" id="weatherHumidity">--%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[var(--fg-muted)]">Wind Speed</span>
+                                    <span class="font-semibold" id="weatherWind">-- km/h</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[var(--fg-muted)]">Pressure</span>
+                                    <span class="font-semibold" id="weatherPressure">-- hPa</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[var(--fg-muted)]">Visibility</span>
+                                    <span class="font-semibold" id="weatherVisibility">-- km</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="text-lg font-semibold mb-4">Agriculture Tips</h3>
+                            <div class="space-y-3" id="weatherTips">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+                                    <p class="text-sm text-[var(--fg-muted)]">Good conditions for irrigation today</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- MARKET PAGE -->
+        <div class="page" id="page-market">
+            <section class="p-6 lg:p-8 pt-20 lg:pt-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Market Prices</h1>
+                    <p class="text-[var(--fg-muted)]">Current market rates for agricultural products</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="card">
+                        <div class="text-sm text-[var(--fg-muted)] mb-1">Highest Price</div>
+                        <div class="text-2xl font-bold text-green-400">Rs. 8,500</div>
+                        <div class="text-sm text-[var(--fg-muted)]">Cardamom</div>
+                    </div>
+                    <div class="card">
+                        <div class="text-sm text-[var(--fg-muted)] mb-1">Most Traded</div>
+                        <div class="text-2xl font-bold text-blue-400">Rice</div>
+                        <div class="text-sm text-[var(--fg-muted)]">2,500 quintals</div>
+                    </div>
+                    <div class="card">
+                        <div class="text-sm text-[var(--fg-muted)] mb-1">Price Increase</div>
+                        <div class="text-2xl font-bold text-purple-400">+15%</div>
+                        <div class="text-sm text-[var(--fg-muted)]">Wheat</div>
+                    </div>
+                    <div class="card">
+                        <div class="text-sm text-[var(--fg-muted)] mb-1">Price Decrease</div>
+                        <div class="text-2xl font-bold text-red-400">-8%</div>
+                        <div class="text-sm text-[var(--fg-muted)]">Onion</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Commodity</th>
+                                    <th>Min Price</th>
+                                    <th>Max Price</th>
+                                    <th>Modal Price</th>
+                                    <th>Market</th>
+                                    <th>Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marketTableBody">
+                                <!-- Market data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SCHEMES PAGE -->
+        <div class="page" id="page-schemes">
+            <section class="p-6 lg:p-8 pt-20 lg:pt-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Government Schemes</h1>
+                    <p class="text-[var(--fg-muted)]">Agriculture schemes and subsidies for farmers</p>
+                </div>
+
+                <div class="card mb-8">
+                    <h3 class="text-lg font-semibold mb-4">Check Your Eligibility</h3>
+                    <form id="eligibilityForm" onsubmit="checkEligibility(event)">
+                        <div class="grid md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="form-label">Land Size (Acres)</label>
+                                <input type="number" class="form-input" id="eligibilityLand" placeholder="5" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Annual Income</label>
+                                <select class="form-input" id="eligibilityIncome" required>
+                                    <option value="">Select Range</option>
+                                    <option value="below-1">Below Rs. 1 Lakh</option>
+                                    <option value="1-2">Rs. 1-2 Lakh</option>
+                                    <option value="2-5">Rs. 2-5 Lakh</option>
+                                    <option value="above-5">Above Rs. 5 Lakh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Category</label>
+                                <select class="form-input" id="eligibilityCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="general">General</option>
+                                    <option value="obc">OBC</option>
+                                    <option value="sc">SC</option>
+                                    <option value="st">ST</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="btn btn-primary w-full">Check Eligibility</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6" id="schemesList">
+                    <!-- Schemes will be loaded here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- PROFILE PAGE -->
+        <div class="page" id="page-profile">
+            <section class="p-6 lg:p-8 pt-20 lg:pt-8">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">My Profile</h1>
+                    <p class="text-[var(--fg-muted)]">Manage your account settings</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="card text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl font-bold text-black" id="profileInitials">JD</span>
+                        </div>
+                        <h3 class="text-xl font-semibold" id="profileName">John Doe</h3>
+                        <p class="text-[var(--fg-muted)]" id="profileEmail">john@example.com</p>
+                        <div class="mt-4 pt-4 border-t border-[var(--border)]">
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <div class="text-2xl font-bold text-green-400" id="profileCrops">0</div>
+                                    <div class="text-sm text-[var(--fg-muted)]">Crops</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-blue-400" id="profileFarmSize">0</div>
+                                    <div class="text-sm text-[var(--fg-muted)]">Acres</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <div class="card">
+                            <h3 class="text-xl font-semibold mb-6">Edit Profile</h3>
+                            <form id="profileForm" onsubmit="updateProfile(event)">
+                                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="form-label">First Name</label>
+                                        <input type="text" class="form-input" id="editFirstName">
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Last Name</label>
+                                        <input type="text" class="form-input" id="editLastName">
+                                    </div>
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-input" id="editEmail" disabled>
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" class="form-input" id="editPhone">
+                                    </div>
+                                </div>
+                                <div class="mb-6">
+                                    <label class="form-label">Farm Size (Acres)</label>
+                                    <input type="number" class="form-input" id="editFarmSize">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Crop Modal -->
+    <div class="modal-overlay" id="cropModal">
+        <div class="modal">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold" id="cropModalTitle">Add New Crop</h3>
+                <button onclick="closeCropModal()" class="text-[var(--fg-muted)] hover:text-[var(--fg)]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="cropForm" onsubmit="saveCrop(event)">
+                <input type="hidden" id="cropId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">Crop Name</label>
+                        <input type="text" class="form-input" id="cropName" placeholder="e.g., Rice, Wheat" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Variety</label>
+                        <input type="text" class="form-input" id="cropVariety" placeholder="e.g., Basmati, IR64">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Area (Acres)</label>
+                            <input type="number" class="form-input" id="cropArea" placeholder="5" required>
+                        </div>
+                        
+                        <div>
+                            <label class="form-label">Status</label>
+                            <select class="form-input" id="cropStatus" required>
+    <option value="planted">Planted</option>
+    <option value="growing">Growing</option>
+    <option value="harvesting">Harvesting</option>
+    <option value="completed">Completed</option>
+</select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Planted Date</label>
+                            <input type="date" class="form-input" id="cropPlantedDate" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Expected Harvest</label>
+                            <input type="date" class="form-input" id="cropHarvestDate" required>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn btn-primary flex-1">Save Crop</button>
+                        <button type="button" onclick="closeCropModal()" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Irrigation Modal -->
+    <div class="modal-overlay" id="irrigationModal">
+        <div class="modal">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold">Add Irrigation Schedule</h3>
+                <button onclick="closeIrrigationModal()" class="text-[var(--fg-muted)] hover:text-[var(--fg)]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="irrigationForm" onsubmit="saveIrrigation(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">Field/Plot Name</label>
+                        <input type="text" class="form-input" id="irrigationField" placeholder="e.g., North Field" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Crop</label>
+                        <select class="form-input" id="irrigationCrop" required>
+                            <option value="">Select Crop</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Irrigation Method</label>
+                        <select class="form-input" id="irrigationMethod" required>
+                            <option value="DRIP">Drip Irrigation</option>
+                            <option value="SPRINKLER">Sprinkler</option>
+                            <option value="FLOOD">Flood Irrigation</option>
+                            <option value="FURROW">Furrow Irrigation</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Schedule Date</label>
+                            <input type="date" class="form-input" id="irrigationDate" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Time</label>
+                            <input type="time" class="form-input" id="irrigationTime" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Water Amount (Liters)</label>
+                        <input type="number" class="form-input" id="irrigationAmount" placeholder="1000" required>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn btn-primary flex-1">Save Schedule</button>
+                        <button type="button" onclick="closeIrrigationModal()" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // DATA INITIALIZATION
+        // =====================================================
+        
+        let currentUser = null;
+        let crops = [];
+        let irrigationSchedules = [];
+        let authToken = null;
+        //const API_BASE_URL = 'http://localhost:8080/api';
+        const API_BASE_URL = 'http://localhost:8080/api'; 
+
+        // Sample Market Data
+               // Tamil Nadu Market Prices (Rs. per Kg) - Real World Data
+        const marketData = [
+            // --- Popular Vegetables ---
+            { commodity: 'Onion (Big)', minPrice: 25, maxPrice: 35, modalPrice: 30, market: 'Koyambedu (Chennai)', change: -2 },
+            { commodity: 'Onion (Small/Natti)', minPrice: 45, maxPrice: 65, modalPrice: 55, market: 'Madurai', change: 3 },
+            { commodity: 'Tomato (Hybrid)', minPrice: 18, maxPrice: 28, modalPrice: 22, market: 'Coimbatore', change: -5 },
+            { commodity: 'Tomato (Country)', minPrice: 30, maxPrice: 50, modalPrice: 40, market: 'Trichy', change: 8 },
+            { commodity: 'Potato', minPrice: 22, maxPrice: 30, modalPrice: 26, market: 'Chennai', change: 0 },
+            { commodity: 'Potato (Golden)', minPrice: 28, maxPrice: 38, modalPrice: 33, market: 'Coimbatore', change: 1 },
+            { commodity: 'Brinjal (Long)', minPrice: 30, maxPrice: 40, modalPrice: 35, market: 'Trichy', change: 4 },
+            { commodity: 'Brinjal (Round)', minPrice: 25, maxPrice: 35, modalPrice: 30, market: 'Salem', change: 2 },
+            { commodity: 'Brinjal (Green)', minPrice: 35, maxPrice: 45, modalPrice: 40, market: 'Coimbatore', change: 1 },
+            { commodity: 'Ladies Finger', minPrice: 25, maxPrice: 35, modalPrice: 30, market: 'Salem', change: -3 },
+            { commodity: 'Cucumber (Long)', minPrice: 20, maxPrice: 30, modalPrice: 25, market: 'Salem', change: 2 },
+            { commodity: 'Cucumber (Madras)', minPrice: 25, maxPrice: 35, modalPrice: 30, market: 'Chennai', change: 1 },
+            
+            // --- Gourds (Squash Family) ---
+            { commodity: 'Bitter Gourd (Pavakkai)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Chennai', change: 2 },
+            { commodity: 'Bottle Gourd (Sorakkai)', minPrice: 20, maxPrice: 30, modalPrice: 25, market: 'Coimbatore', change: -1 },
+            { commodity: 'Ridge Gourd (Peerkankai)', minPrice: 25, maxPrice: 35, modalPrice: 30, market: 'Madurai', change: 1 },
+            { commodity: 'Snake Gourd (Pudalangai)', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Trichy', change: -3 },
+            { commodity: 'Pumpkin (Parangikkai)', minPrice: 15, maxPrice: 25, modalPrice: 20, market: 'Salem', change: 0 },
+            { commodity: 'Ash Gourd (Neer Poosani)', minPrice: 18, maxPrice: 28, modalPrice: 22, market: 'Coimbatore', change: -2 },
+            { commodity: 'Ivy Gourd (Kovakkai)', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Madurai', change: 4 },
+            { commodity: 'Chayote (Chow Chow)', minPrice: 25, maxPrice: 35, modalPrice: 30, market: 'Ooty/Coimbatore', change: 2 },
+            
+            // --- Greens (Keerai Varieties) ---
+            { commodity: 'Spinach (Keerai)', minPrice: 15, maxPrice: 25, modalPrice: 20, market: 'Chennai', change: 3 },
+            { commodity: 'Arai Keerai', minPrice: 18, maxPrice: 28, modalPrice: 22, market: 'Madurai', change: 2 },
+            { commodity: 'Siru Keerai', minPrice: 20, maxPrice: 30, modalPrice: 25, market: 'Trichy', change: 1 },
+            { commodity: 'Murungai Keerai', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Chennai', change: 5 },
+            { commodity: 'Pulicha Keerai', minPrice: 25, maxPrice: 35, modalPrice: 30, market: 'Coimbatore', change: -1 },
+            { commodity: 'Coriander Leaves', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Koyambedu (Chennai)', change: -5 },
+            { commodity: 'Curry Leaves', minPrice: 100, maxPrice: 150, modalPrice: 125, market: 'Madurai', change: 2 },
+            { commodity: 'Mint Leaves (Pudina)', minPrice: 60, maxPrice: 90, modalPrice: 75, market: 'Coimbatore', change: 4 },
+            { commodity: 'Fenugreek Leaves (Vendhaya Keerai)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Trichy', change: 1 },
+            { commodity: 'Amaranthus (Thandu Keerai)', minPrice: 20, maxPrice: 30, modalPrice: 25, market: 'Salem', change: 0 },
+            
+            // --- Root Vegetables & Tubers ---
+            { commodity: 'Carrot (Ooty)', minPrice: 50, maxPrice: 70, modalPrice: 60, market: 'Coimbatore', change: 2 },
+            { commodity: 'Carrot (Local)', minPrice: 35, maxPrice: 50, modalPrice: 42, market: 'Chennai', change: 1 },
+            { commodity: 'Beetroot', minPrice: 30, maxPrice: 40, modalPrice: 35, market: 'Trichy', change: 1 },
+            { commodity: 'Radish (White)', minPrice: 20, maxPrice: 30, modalPrice: 25, market: 'Salem', change: -2 },
+            { commodity: 'Yam (Karunai Kizhangu)', minPrice: 50, maxPrice: 70, modalPrice: 60, market: 'Trichy', change: 6 },
+            { commodity: 'Elephant Yam (Senai)', minPrice: 40, maxPrice: 55, modalPrice: 48, market: 'Salem', change: 1 },
+            { commodity: 'Tapioca (Maravalli)', minPrice: 15, maxPrice: 22, modalPrice: 18, market: 'Erode', change: 0 },
+            { commodity: 'Sweet Potato', minPrice: 30, maxPrice: 40, modalPrice: 35, market: 'Chennai', change: -1 },
+            { commodity: 'Colocasia (Seppankizhangu)', minPrice: 40, maxPrice: 55, modalPrice: 48, market: 'Madurai', change: 3 },
+            { commodity: 'Arrowroot (Ararot Kizhangu)', minPrice: 60, maxPrice: 80, modalPrice: 70, market: 'Salem', change: 2 },
+            
+            // --- Beans & Peas ---
+            { commodity: 'Beans (Broad)', minPrice: 40, maxPrice: 55, modalPrice: 48, market: 'Chennai', change: 5 },
+            { commodity: 'Cluster Beans (Kothavarangai)', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Madurai', change: 2 },
+            { commodity: 'Broad Beans (Avarakkai)', minPrice: 35, maxPrice: 50, modalPrice: 42, market: 'Coimbatore', change: 3 },
+            { commodity: 'Green Peas (Fresh)', minPrice: 50, maxPrice: 70, modalPrice: 60, market: 'Chennai', change: 0 },
+            { commodity: 'Cowpea (Karamani)', minPrice: 40, maxPrice: 55, modalPrice: 48, market: 'Trichy', change: 1 },
+            { commodity: 'Double Beans', minPrice: 60, maxPrice: 80, modalPrice: 70, market: 'Salem', change: 4 },
+            
+            // --- Cabbage & Cauliflower ---
+            { commodity: 'Cabbage (Green)', minPrice: 12, maxPrice: 20, modalPrice: 16, market: 'Coimbatore', change: -4 },
+            { commodity: 'Cabbage (Red)', minPrice: 35, maxPrice: 50, modalPrice: 42, market: 'Chennai', change: 2 },
+            { commodity: 'Cauliflower', minPrice: 25, maxPrice: 40, modalPrice: 32, market: 'Madurai', change: 0 },
+            { commodity: 'Knol Khol', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Salem', change: 1 },
+            
+            // --- Leafy Spices & Herbs ---
+            { commodity: 'Green Chilli (Normal)', minPrice: 60, maxPrice: 90, modalPrice: 75, market: 'Koyambedu (Chennai)', change: 12 },
+            { commodity: 'Green Chilli (Guntur)', minPrice: 80, maxPrice: 110, modalPrice: 95, market: 'Madurai', change: 15 },
+            { commodity: 'Ginger (Inji)', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Coimbatore', change: 5 },
+            { commodity: 'Garlic (Poondu)', minPrice: 90, maxPrice: 130, modalPrice: 110, market: 'Madurai', change: -3 },
+            { commodity: 'Garlic (Small)', minPrice: 100, maxPrice: 140, modalPrice: 120, market: 'Trichy', change: -2 },
+            { commodity: 'Lemon (Elumichai)', minPrice: 60, maxPrice: 90, modalPrice: 75, market: 'Chennai', change: -8 },
+            { commodity: 'Turmeric (Fresh)', minPrice: 80, maxPrice: 100, modalPrice: 90, market: 'Erode', change: 4 },
+            
+            // --- Fruits ---
+            { commodity: 'Banana (Nendran)', minPrice: 50, maxPrice: 70, modalPrice: 60, market: 'Trichy', change: 2 },
+            { commodity: 'Banana (Robusta)', minPrice: 35, maxPrice: 45, modalPrice: 40, market: 'Coimbatore', change: -2 },
+            { commodity: 'Banana (Rasthali)', minPrice: 40, maxPrice: 55, modalPrice: 48, market: 'Erode', change: 1 },
+            { commodity: 'Banana (Red)', minPrice: 60, maxPrice: 80, modalPrice: 70, market: 'Chennai', change: 3 },
+            { commodity: 'Mango (Alphonso)', minPrice: 150, maxPrice: 200, modalPrice: 180, market: 'Chennai', change: 15 },
+            { commodity: 'Mango (Banganapalli)', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Madurai', change: 10 },
+            { commodity: 'Mango (Totapuri)', minPrice: 60, maxPrice: 80, modalPrice: 70, market: 'Salem', change: 5 },
+            { commodity: 'Guava (Koyya)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Salem', change: 0 },
+            { commodity: 'Papaya (Pappali)', minPrice: 20, maxPrice: 35, modalPrice: 28, market: 'Trichy', change: -2 },
+            { commodity: 'Pomegranate', minPrice: 150, maxPrice: 200, modalPrice: 180, market: 'Chennai', change: 3 },
+            { commodity: 'Jackfruit (Raw)', minPrice: 30, maxPrice: 50, modalPrice: 40, market: 'Coimbatore', change: 4 },
+            { commodity: 'Jackfruit (Ripe)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Trichy', change: 6 },
+            { commodity: 'Sapota (Sapota)', minPrice: 50, maxPrice: 70, modalPrice: 60, market: 'Salem', change: 1 },
+            { commodity: 'Watermelon', minPrice: 15, maxPrice: 25, modalPrice: 20, market: 'Chennai', change: -5 },
+            { commodity: 'Muskmelon', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Madurai', change: 2 },
+            { commodity: 'Grapes (Panneer)', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Theni', change: 4 },
+            { commodity: 'Grapes (Green)', minPrice: 60, maxPrice: 90, modalPrice: 75, market: 'Coimbatore', change: 2 },
+            { commodity: 'Orange (Nagpur)', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Chennai', change: -1 },
+            { commodity: 'Mosambi (Sweet Lime)', minPrice: 70, maxPrice: 100, modalPrice: 85, market: 'Madurai', change: 1 },
+            { commodity: 'Apple (Himachal)', minPrice: 150, maxPrice: 200, modalPrice: 180, market: 'Chennai', change: 0 },
+            
+            // --- Others & Seasonal ---
+            { commodity: 'Drumstick (Murungakkai)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Trichy', change: 6 },
+            { commodity: 'Coconut (Nattu)', minPrice: 20, maxPrice: 30, modalPrice: 25, market: 'Coimbatore', change: 1 },
+            { commodity: 'Coconut (Tender)', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Chennai', change: 3 },
+            { commodity: 'Ridge Gourd Flower', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Madurai', change: 5 },
+            { commodity: 'Banana Flower (Vazhaipoo)', minPrice: 50, maxPrice: 80, modalPrice: 65, market: 'Trichy', change: 2 },
+            { commodity: 'Banana Stem (Vazhaithandu)', minPrice: 30, maxPrice: 45, modalPrice: 38, market: 'Coimbatore', change: 1 },
+            { commodity: 'Raw Mango (Kili Mooku)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Salem', change: 8 },
+            { commodity: 'Amla (Nellikkai)', minPrice: 50, maxPrice: 70, modalPrice: 60, market: 'Chennai', change: 4 },
+            { commodity: 'Capsicum (Green)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Coimbatore', change: 2 },
+            { commodity: 'Capsicum (Red)', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Chennai', change: 3 },
+            { commodity: 'Capsicum (Yellow)', minPrice: 70, maxPrice: 100, modalPrice: 85, market: 'Madurai', change: 2 },
+            { commodity: 'Mushroom (Button)', minPrice: 120, maxPrice: 160, modalPrice: 140, market: 'Chennai', change: 1 },
+            { commodity: 'Corn (Sweet Corn)', minPrice: 40, maxPrice: 60, modalPrice: 50, market: 'Coimbatore', change: 0 },
+            { commodity: 'Corn (Baby Corn)', minPrice: 80, maxPrice: 120, modalPrice: 100, market: 'Chennai', change: 1 }
+        ];
+        // Government Schemes
+        const schemes = [
+            {
+                name: 'PM-KISAN',
+                description: 'Pradhan Mantri Kisan Samman Nidhi - Direct income support of Rs. 6000 per year to farmer families.',
+                benefits: 'Rs. 6,000 per year in 3 installments',
+                eligibility: ['Land holding up to 2 hectares', 'Indian citizen', 'Farmer family'],
+                criteria: { maxLand: 5, maxIncome: 'above-5', maxIncome: 'above-5', categories: ['general', 'obc', 'sc', 'st'] }
+            },
+            {
+                name: 'PM Fasal Bima Yojana',
+                description: 'Crop insurance scheme providing financial support to farmers in case of crop failure.',
+                benefits: 'Insurance coverage for crop damage due to natural calamities',
+                eligibility: ['All farmers including tenant farmers', 'Compulsory for loanee farmers'],
+                criteria: { maxLand: 100, maxIncome: 'above-5', categories: ['general', 'obc', 'sc', 'st'] }
+            },
+            {
+                name: 'Kisan Credit Card',
+                description: 'Provides farmers with affordable credit for their cultivation needs.',
+                benefits: 'Credit up to Rs. 3 lakh at 4% interest rate',
+                eligibility: ['All farmers', 'Tenant farmers', 'Oral lessees'],
+                criteria: { maxLand: 100, maxIncome: 'above-5', categories: ['general', 'obc', 'sc', 'st'] }
+            },
+            {
+                name: 'Soil Health Card Scheme',
+                description: 'Provides soil health cards to farmers with crop-wise recommendations.',
+                benefits: 'Free soil testing and recommendations',
+                eligibility: ['All farmers with land'],
+                criteria: { maxLand: 100, maxIncome: 'above-5', categories: ['general', 'obc', 'sc', 'st'] }
+            },
+            {
+                name: 'e-NAM',
+                description: 'Electronic National Agriculture Market - Online trading platform for agricultural commodities.',
+                benefits: 'Access to national market, better price discovery',
+                eligibility: ['All farmers and traders'],
+                criteria: { maxLand: 100, maxIncome: 'above-5', categories: ['general', 'obc', 'sc', 'st'] }
+            },
+            {
+                name: 'Agriculture Infrastructure Fund',
+                description: 'Financing facility for investment in post-harvest management infrastructure.',
+                benefits: 'Credit up to Rs. 2 crore with 3% interest subvention',
+                eligibility: ['Farmers, FPOs, Agri-entrepreneurs'],
+                criteria: { maxLand: 100, maxIncome: 'above-5', categories: ['general', 'obc', 'sc', 'st'] }
+            }
+        ];
+
+        // =====================================================
+        // API HELPERS
+        // =====================================================
+        
+        async function apiRequest(endpoint, options = {}) {
+            const url = `${API_BASE_URL}${endpoint}`;
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                ...options
+            };
+
+            if (authToken) {
+                config.headers.Authorization = `Bearer ${authToken}`;
+            }
+
+            try {
+                const response = await fetch(url, config);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'API request failed');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        function saveAuthData(user, token) {
+            currentUser = user;
+            authToken = token;
+            localStorage.setItem('agriCurrentUser', JSON.stringify(user));
+            localStorage.setItem('agriAuthToken', token);
+        }
+
+        function loadAuthData() {
+            const savedUser = localStorage.getItem('agriCurrentUser');
+            const savedToken = localStorage.getItem('agriAuthToken');
+            
+            if (savedUser && savedToken) {
+                currentUser = JSON.parse(savedUser);
+                authToken = savedToken;
+                return true;
+            }
+            return false;
+        }
+
+        function clearAuthData() {
+            currentUser = null;
+            authToken = null;
+            localStorage.removeItem('agriCurrentUser');
+            localStorage.removeItem('agriAuthToken');
+        }
+
+        async function checkAuth() {
+            if (loadAuthData()) {
+                // User is authenticated, load their data
+                try {
+                    await loadUserData();
+                    showPage('dashboard');
+                } catch (error) {
+                    // If loading fails, clear auth and show login
+                    clearAuthData();
+                    showPage('home');
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeParticles();
+            initializeScrollAnimations();
+            initializeStatCounters();
+            checkAuth();
+            loadMockWeather();
+            loadMarketPrices();
+            loadSchemes();
+        });
+
+        // =====================================================
+        // PARTICLES SYSTEM
+        // =====================================================
+        
+        function initializeParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (5 + Math.random() * 5) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // =====================================================
+        // SCROLL ANIMATIONS
+        // =====================================================
+        
+        function initializeScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+        }
+
+        // =====================================================
+        // STAT COUNTERS
+        // =====================================================
+        
+        function initializeStatCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-count]');
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.count);
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = formatNumber(Math.floor(current));
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = formatNumber(target);
+                    }
+                };
+                updateCounter();
+            });
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+            return num.toString();
+        }
+
+        // =====================================================
+        // PAGE NAVIGATION
+        // =====================================================
+        
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show target page
+            const targetPage = document.getElementById('page-' + pageName);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Toggle navigation visibility
+            const publicPages = ['home', 'login', 'register'];
+            const isPublic = publicPages.includes(pageName);
+            
+            document.getElementById('publicNav').style.display = isPublic ? 'block' : 'none';
+            document.getElementById('sidebar').classList.toggle('open', !isPublic);
+            document.getElementById('heroBg').style.display = isPublic ? 'block' : 'none';
+            document.getElementById('dashboardBg').classList.toggle('hidden', isPublic);
+
+            // Update active nav link
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageName) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Load page-specific data
+            if (!isPublic && !currentUser) {
+                showPage('login');
+                showToast('Please login to continue', 'warning');
+                return;
+            }
+
+            if (pageName === 'dashboard') loadDashboard();
+            if (pageName === 'crops') loadCrops();
+            if (pageName === 'irrigation') loadIrrigation();
+            if (pageName === 'profile') loadProfile();
+            if (pageName === 'weather') loadWeatherPage();
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // =====================================================
+        // AUTHENTICATION
+        // =====================================================
+        
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await apiRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                // Login now returns LoginResponse directly with token and user
+                const token = response.token;
+                const user = response.user;
+                
+                saveAuthData(user, token);
+                showToast('Welcome back!', 'success');
+                await loadUserData();
+                showPage('dashboard');
+                requestNotificationPermission();
+            } catch (error) {
+                showToast('Login failed: ' + error.message, 'error');
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const firstName = document.getElementById('regFirstName').value;
+            const lastName = document.getElementById('regLastName').value;
+            const email = document.getElementById('regEmail').value;
+            const phone = document.getElementById('regPhone').value;
+            const farmSize = document.getElementById('regFarmSize').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiRequest('/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        email,
+                        phone,
+                        farmSize: parseInt(farmSize),
+                        password
+                    })
+                });
+
+                if (response.success) {
+                    showToast('Account created successfully!', 'success');
+                    showPage('login');
+                } else {
+                    showToast(response.message || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showToast('Registration failed: ' + error.message, 'error');
+            }
+        }
+
+        function logout() {
+            clearAuthData();
+            showToast('Logged out successfully', 'success');
+            showPage('home');
+        }
+
+        async function loadUserData() {
+            try {
+                // Load crops
+                const cropsResponse = await apiRequest('/crops');
+                crops = cropsResponse || [];
+                
+                // Load irrigation schedules for current user
+                const irrigationResponse = await apiRequest(`/irrigation/user/${currentUser.id}`);
+                irrigationSchedules = irrigationResponse || [];
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                // Fallback to empty arrays
+                crops = [];
+                irrigationSchedules = [];
+            }
+        }
+
+        // =====================================================
+        // DASHBOARD
+        // =====================================================
+        
+        function loadDashboard() {
+            if (!currentUser) return;
+
+            document.getElementById('dashboardUserName').textContent = currentUser.firstName;
+            document.getElementById('totalCrops').textContent = crops.length;
+            document.getElementById('totalIrrigation').textContent = irrigationSchedules.length;
+            document.getElementById('profileFarmSize').textContent = currentUser.farmSize;
+
+            // Recent crops
+            const recentCropsList = document.getElementById('recentCropsList');
+            if (crops.length === 0) {
+                recentCropsList.innerHTML = '<p class="text-[var(--fg-muted)] text-center py-8">No crops added yet</p>';
+            } else {
+                recentCropsList.innerHTML = crops.slice(0, 4).map(crop => `
+                    <div class="flex items-center justify-between p-3 bg-[var(--bg)] rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium">${crop.name}</div>
+                                <div class="text-sm text-[var(--fg-muted)]">${crop.area} acres</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(crop.status)}">${crop.status}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Weather forecast on dashboard
+            loadWeatherForecast();
+
+            // Average price
+            const avgPrice = Math.round(marketData.reduce((sum, item) => sum + item.modalPrice, 0) / marketData.length);
+            document.getElementById('avgPrice').textContent = avgPrice.toLocaleString();
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                planted: 'bg-blue-500/20 text-blue-400',
+                growing: 'bg-green-500/20 text-green-400',
+                harvesting: 'bg-yellow-500/20 text-yellow-400',
+                completed: 'bg-purple-500/20 text-purple-400'
+            };
+            return colors[status] || 'bg-gray-500/20 text-gray-400';
+        }
+
+        // =====================================================
+        // CROPS MANAGEMENT
+        // =====================================================
+        
+        function loadCrops() {
+            const tbody = document.getElementById('cropsTableBody');
+            if (crops.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-[var(--fg-muted)]">No crops added yet. Click "Add New Crop" to get started.</td></tr>';
+            } else {
+                tbody.innerHTML = crops.map((crop, index) => `
+                    <tr>
+                        <td class="font-medium">${crop.name}</td>
+                        <td>${crop.variety || '-'}</td>
+                        <td>${crop.area}</td>
+                        <td>${formatDate(crop.plantedDate)}</td>
+                        <td>${formatDate(crop.harvestDate)}</td>
+                        <td><span class="px-2 py-1 text-xs rounded-full ${getStatusColor(crop.status)}">${crop.status}</span></td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button onclick="editCrop(${index})" class="btn btn-secondary btn-sm">Edit</button>
+                                <button onclick="deleteCrop(${index})" class="btn btn-danger btn-sm">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function openCropModal(cropIndex = null) {
+            const modal = document.getElementById('cropModal');
+            const title = document.getElementById('cropModalTitle');
+            const form = document.getElementById('cropForm');
+
+            if (cropIndex !== null) {
+                const crop = crops[cropIndex];
+                title.textContent = 'Edit Crop';
+                document.getElementById('cropId').value = crop.id; // Use crop ID instead of index
+                document.getElementById('cropName').value = crop.name;
+                document.getElementById('cropVariety').value = crop.variety || '';
+                document.getElementById('cropArea').value = crop.area;
+                document.getElementById('cropStatus').value = crop.status;
+                document.getElementById('cropPlantedDate').value = crop.plantedDate;
+                document.getElementById('cropHarvestDate').value = crop.harvestDate;
+            } else {
+                title.textContent = 'Add New Crop';
+                form.reset();
+                document.getElementById('cropId').value = '';
+                document.getElementById('cropPlantedDate').value = new Date().toISOString().split('T')[0];
+                // Set default harvest date to 4 months from planting
+                const harvestDate = new Date();
+                harvestDate.setMonth(harvestDate.getMonth() + 4);
+                document.getElementById('cropHarvestDate').value = harvestDate.toISOString().split('T')[0];
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeCropModal() {
+            document.getElementById('cropModal').classList.remove('active');
+        }
+
+        async function saveCrop(event) {
+            event.preventDefault();
+
+            const cropData = {
+                name: document.getElementById('cropName').value,
+                variety: document.getElementById('cropVariety').value,
+                area: parseFloat(document.getElementById('cropArea').value),
+                status: document.getElementById('cropStatus').value,
+                plantedDate: document.getElementById('cropPlantedDate').value,
+                harvestDate: document.getElementById('cropHarvestDate').value
+            };
+
+            try {
+                const cropId = document.getElementById('cropId').value;
+
+                if (cropId !== '') {
+                    // Update existing crop
+                    await apiRequest(`/crops/${cropId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(cropData)
+                    });
+                    showToast('Crop updated successfully', 'success');
+                } else {
+                    // Add new crop
+                    await apiRequest('/crops', {
+                        method: 'POST',
+                        body: JSON.stringify(cropData)
+                    });
+                    showToast('Crop added successfully', 'success');
+                    sendNotification('Crop Added', `${cropData.name} has been added to your farm`);
+                }
+
+                closeCropModal();
+                await loadUserData(); // Reload data
+                loadCrops();
+                loadDashboard();
+            } catch (error) {
+                showToast('Failed to save crop: ' + error.message, 'error');
+            }
+        }
+
+        function editCrop(index) {
+            openCropModal(index);
+        }
+
+        async function deleteCrop(index) {
+            if (confirm('Are you sure you want to delete this crop?')) {
+                try {
+                    const crop = crops[index];
+                    await apiRequest(`/crops/${crop.id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    await loadUserData(); // Reload data
+                    loadCrops();
+                    loadDashboard();
+                    showToast('Crop deleted successfully', 'success');
+                } catch (error) {
+                    showToast('Failed to delete crop: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // =====================================================
+        // IRRIGATION MANAGEMENT
+        // =====================================================
+        
+        function loadIrrigation() {
+            const container = document.getElementById('irrigationList');
+            
+            if (irrigationSchedules.length === 0) {
+                container.innerHTML = '<div class="card col-span-full text-center py-12"><p class="text-[var(--fg-muted)]">No irrigation schedules yet. Click "Add Schedule" to get started.</p></div>';
+            } else {
+                container.innerHTML = irrigationSchedules.map((schedule, index) => `
+                    <div class="card dashboard-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                </svg>
+                            </div>
+                            <button onclick="deleteIrrigation(${index})" class="text-red-400 hover:text-red-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-1">${schedule.fieldName}</h3>
+                        <p class="text-sm text-[var(--fg-muted)] mb-4">${schedule.cropName}</p>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-[var(--fg-muted)]">Method</span>
+                                <span class="capitalize">${schedule.method.toLowerCase()}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-[var(--fg-muted)]">Date</span>
+                                <span>${formatDate(schedule.scheduleDate)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-[var(--fg-muted)]">Time</span>
+                                <span>${schedule.scheduleTime}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-[var(--fg-muted)]">Water</span>
+                                <span>${schedule.waterAmount} L</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-[var(--border)]">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${Math.random() * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function openIrrigationModal() {
+            const modal = document.getElementById('irrigationModal');
+            const cropSelect = document.getElementById('irrigationCrop');
+
+            // Populate crop dropdown
+            cropSelect.innerHTML = '<option value="">Select Crop</option>' +
+                crops.map(crop => `<option value="${crop.name}">${crop.name}</option>`).join('');
+
+            document.getElementById('irrigationForm').reset();
+            document.getElementById('irrigationDate').value = new Date().toISOString().split('T')[0];
+            modal.classList.add('active');
+        }
+
+        function closeIrrigationModal() {
+            document.getElementById('irrigationModal').classList.remove('active');
+        }
+
+        async function saveIrrigation(event) {
+            event.preventDefault();
+
+            const schedule = {
+                fieldName: document.getElementById('irrigationField').value,
+                cropName: document.getElementById('irrigationCrop').value,
+                method: document.getElementById('irrigationMethod').value,
+                scheduleDate: document.getElementById('irrigationDate').value,
+                scheduleTime: document.getElementById('irrigationTime').value,
+                waterAmount: parseInt(document.getElementById('irrigationAmount').value)
+            };
+
+            try {
+                await apiRequest('/irrigation', {
+                    method: 'POST',
+                    body: JSON.stringify(schedule)
+                });
+
+                closeIrrigationModal();
+                await loadUserData(); // Reload data
+                loadIrrigation();
+                loadDashboard();
+                showToast('Irrigation schedule added', 'success');
+                sendNotification('Irrigation Scheduled', `${schedule.fieldName} scheduled for ${formatDate(schedule.scheduleDate)}`);
+            } catch (error) {
+                showToast('Failed to save irrigation schedule: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteIrrigation(index) {
+            if (confirm('Delete this irrigation schedule?')) {
+                try {
+                    const schedule = irrigationSchedules[index];
+                    await apiRequest(`/irrigation/${schedule.id}`, {
+                        method: 'DELETE'
+                    });
+
+                    await loadUserData(); // Reload data
+                    loadIrrigation();
+                    loadDashboard();
+                    showToast('Schedule deleted', 'success');
+                } catch (error) {
+                    showToast('Failed to delete irrigation schedule: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // =====================================================
+        // WEATHER
+        // =====================================================
+        
+        let weatherData = null;
+
+        function loadMockWeather() {
+            // Simulated weather data
+            weatherData = {
+                location: 'New Delhi, India',
+                temperature: 32,
+                condition: 'Partly Cloudy',
+                humidity: 65,
+                wind: 12,
+                pressure: 1013,
+                visibility: 10,
+                forecast: [
+                    { day: 'Mon', temp: 32, condition: 'Partly Cloudy', icon: 'cloud-sun' },
+                    { day: 'Tue', temp: 30, condition: 'Rainy', icon: 'rain' },
+                    { day: 'Wed', temp: 28, condition: 'Rainy', icon: 'rain' },
+                    { day: 'Thu', temp: 31, condition: 'Sunny', icon: 'sun' },
+                    { day: 'Fri', temp: 33, condition: 'Sunny', icon: 'sun' }
+                ]
+            };
+            
+            updateWeatherDisplay();
+        }
+
+        function updateWeatherDisplay() {
+            if (!weatherData) return;
+
+            document.getElementById('weatherTemp').textContent = weatherData.temperature + '°C';
+            document.getElementById('currentTemp').textContent = weatherData.temperature + '°C';
+            document.getElementById('currentCondition').textContent = weatherData.condition;
+            document.getElementById('weatherCondition').textContent = weatherData.condition;
+            document.getElementById('weatherLocation').textContent = weatherData.location;
+            document.getElementById('weatherHumidity').textContent = weatherData.humidity + '%';
+            document.getElementById('weatherWind').textContent = weatherData.wind + ' km/h';
+            document.getElementById('weatherPressure').textContent = weatherData.pressure + ' hPa';
+            document.getElementById('weatherVisibility').textContent = weatherData.visibility + ' km';
+
+            // Agriculture tips based on weather
+            const tips = [];
+            if (weatherData.humidity > 60) {
+                tips.push('High humidity - Monitor for fungal diseases');
+            }
+            if (weatherData.temperature > 30) {
+                tips.push('High temperature - Ensure adequate irrigation');
+            }
+            if (weatherData.condition.includes('Rain')) {
+                tips.push('Rain expected - Postpone pesticide application');
+            }
+            tips.push('Good conditions for field work today');
+
+            document.getElementById('weatherTips').innerHTML = tips.map(tip => `
+                <div class="flex items-start gap-3">
+                    <div class="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+                    <p class="text-sm text-[var(--fg-muted)]">${tip}</p>
+                </div>
+            `).join('');
+        }
+
+        function loadWeatherPage() {
+            updateWeatherDisplay();
+
+            const forecastList = document.getElementById('forecastList');
+            forecastList.innerHTML = weatherData.forecast.map(day => `
+                <div class="flex items-center justify-between p-3 bg-[var(--bg)] rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-medium">${day.day}</div>
+                            <div class="text-sm text-[var(--fg-muted)]">${day.condition}</div>
+                        </div>
+                    </div>
+                    <div class="text-lg font-semibold">${day.temp}°C</div>
+                </div>
+            `).join('');
+        }
+
+        function loadWeatherForecast() {
+            const container = document.getElementById('weatherForecast');
+            if (!weatherData) return;
+
+            container.innerHTML = weatherData.forecast.map(day => `
+                <div class="text-center p-3 bg-[var(--bg)] rounded-lg">
+                    <div class="text-sm text-[var(--fg-muted)] mb-2">${day.day}</div>
+                    <div class="w-8 h-8 mx-auto mb-2">
+                        <svg class="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0z"/>
+                        </svg>
+                    </div>
+                    <div class="font-semibold">${day.temp}°</div>
+                </div>
+            `).join('');
+        }
+
+        function refreshWeather() {
+            showToast('Weather data refreshed', 'success');
+            loadMockWeather();
+        }
+
+        // =====================================================
+        // MARKET PRICES
+        // =====================================================
+        
+        function loadMarketPrices() {
+            const tbody = document.getElementById('marketTableBody');
+            const now = new Date();
+
+            tbody.innerHTML = marketData.map(item => `
+                <tr>
+                    <td class="font-medium">${item.commodity}</td>
+                    <td>Rs. ${item.minPrice.toLocaleString()}</td>
+                    <td>Rs. ${item.maxPrice.toLocaleString()}</td>
+                    <td class="font-semibold">Rs. ${item.modalPrice.toLocaleString()}</td>
+                    <td>${item.market}</td>
+                    <td>
+                        <span class="${item.change >= 0 ? 'text-green-400' : 'text-red-400'}">
+                            ${item.change >= 0 ? '+' : ''}${item.change}%
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // =====================================================
+        // GOVERNMENT SCHEMES
+        // =====================================================
+        
+        function loadSchemes() {
+            const container = document.getElementById('schemesList');
+            container.innerHTML = schemes.map(scheme => `
+                <div class="card">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 bg-red-500/20 rounded-2xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">${scheme.name}</h3>
+                    <p class="text-sm text-[var(--fg-muted)] mb-4">${scheme.description}</p>
+                    <div class="bg-[var(--bg)] p-3 rounded-lg mb-4">
+                        <div class="text-sm font-medium text-green-400">${scheme.benefits}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium mb-2">Eligibility:</div>
+                        <ul class="text-sm text-[var(--fg-muted)] space-y-1">
+                            ${scheme.eligibility.map(e => `<li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-green-400 rounded-full"></div>${e}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkEligibility(event) {
+            event.preventDefault();
+            
+            const land = parseFloat(document.getElementById('eligibilityLand').value);
+            const income = document.getElementById('eligibilityIncome').value;
+            const category = document.getElementById('eligibilityCategory').value;
+
+            const eligibleSchemes = schemes.filter(scheme => {
+                return land <= scheme.criteria.maxLand &&
+                       scheme.criteria.categories.includes(category);
+            });
+
+            if (eligibleSchemes.length > 0) {
+                showToast(`You are eligible for ${eligibleSchemes.length} schemes!`, 'success');
+            } else {
+                showToast('No matching schemes found for your criteria', 'warning');
+            }
+        }
+
+        // =====================================================
+        // PROFILE
+        // =====================================================
+        
+        function loadProfile() {
+            if (!currentUser) return;
+
+            document.getElementById('profileName').textContent = currentUser.firstName + ' ' + currentUser.lastName;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profileInitials').textContent = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
+            document.getElementById('profileCrops').textContent = crops.length;
+            document.getElementById('profileFarmSize').textContent = currentUser.farmSize;
+
+            document.getElementById('editFirstName').value = currentUser.firstName;
+            document.getElementById('editLastName').value = currentUser.lastName;
+            document.getElementById('editEmail').value = currentUser.email;
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editFarmSize').value = currentUser.farmSize;
+        }
+
+        function updateProfile(event) {
+            event.preventDefault();
+
+            currentUser.firstName = document.getElementById('editFirstName').value;
+            currentUser.lastName = document.getElementById('editLastName').value;
+            currentUser.phone = document.getElementById('editPhone').value;
+            currentUser.farmSize = parseInt(document.getElementById('editFarmSize').value);
+
+            localStorage.setItem('agriCurrentUser', JSON.stringify(currentUser));
+
+            // Update in users list
+            const users = JSON.parse(localStorage.getItem('agriUsers') || '[]');
+            const index = users.findIndex(u => u.id === currentUser.id);
+            if (index !== -1) {
+                users[index] = currentUser;
+                localStorage.setItem('agriUsers', JSON.stringify(users));
+            }
+
+            loadProfile();
+            loadDashboard();
+            showToast('Profile updated successfully', 'success');
+        }
+
+        // =====================================================
+        // NOTIFICATIONS
+        // =====================================================
+        
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission();
+            }
+        }
+
+        function sendNotification(title, body) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2322c55e"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>'
+                });
+            }
+        }
+
+        // =====================================================
+        // TOAST NOTIFICATIONS
+        // =====================================================
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+                error: '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+                warning: '<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+            };
+
+            toast.innerHTML = `${icons[type]}<span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // =====================================================
+        // UTILITY FUNCTIONS
+        // =====================================================
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>
